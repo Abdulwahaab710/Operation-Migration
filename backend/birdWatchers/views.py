@@ -27,8 +27,8 @@ def search():
         l = model.print_scores(pred=pred, k=10)
         # Close the TensorFlow session.
         model.close()
-        response = {"top3":l[0:3]}
-        return jsonify( response )
+        response = {"top3": l[0:3], "top1": l[0]}
+        return jsonify(response)
     return abort(404)
 
 
@@ -36,7 +36,3 @@ def base64ToImg(img_data):
     img_data = str.encode(img_data)
     with open('temp.jpg', 'wb') as img:
         img.write(base64.decodestring(img_data))
-    # img_data = str.encode(img_data)
-    # img = open('temp.jpg', 'wb')
-    # img.write(img_data.decode('base64'))
-    # img.close()
