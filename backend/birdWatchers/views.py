@@ -1,7 +1,7 @@
 from birdWatchers import app
 import tensorflow as tf
 import os
-from flask import request
+from flask import request, jsonify
 import base64
 # from birdWatchers.Inception.inception import download
 from birdWatchers.inception import Inception
@@ -13,36 +13,22 @@ def main():
 
 
 @app.route('/search', methods=['POST'])
-def test():
-    # print(request.json)
-    jsonRequest = request.json
-    base64ToImg(jsonRequest['image'])
-    return 'hello'
-
-
 def search():
     print(request.json)
     print(tf.__version__)
-
-    # data_dir = "birdWatchers/inception"
-    # imagePath = 'cropped_panda.jpg'
-    # image_path = os.path.join(data_dir, imagePath)
+    jsonRequest = request.json
+    base64ToImg(jsonRequest['image'])
     image_path = os.path.join('temp.jpg')
     # Load the Inception model so it is ready for classifying images.
     model = Inception()
     pred = model.classify(image_path=image_path)
     # Print the scores and names for the top-10 predictions.
     l = model.print_scores(pred=pred, k=10)
-
+    print(l)
     # Close the TensorFlow session.
     model.close()
-    response = '<ul>'
-    for i in l:
-        response += '<li>'
-        response += str(i[1])
-        response += '</li>'
-    response += '</ul>'
-    return response
+    response = {"top3":l[0:3]}
+    return jsonify( response )
 
 
 def base64ToImg(img_data):
