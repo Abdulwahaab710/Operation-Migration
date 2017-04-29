@@ -67,7 +67,7 @@ import sys
 
 # Internet URL for the tar-file with the Inception model.
 # Note that this might change in the future and will need to be updated.
-data_url = "http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz"
+DATA_URL = "http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz"
 
 # Directory to store the downloaded data.
 data_dir = "inception/"
@@ -105,7 +105,7 @@ class NameLookup:
 
     Maps between:
     - cls is the class-number as an integer between 1 and 1000 (inclusive).
-    - uid is a class-id as a string from the ImageNet data-set, e.g. "n00017222".
+    - uid is a class-id as a string from the ImageNet data-set, e.g. "n00017222"
     - name is the class-name as a string, e.g. "plant, flora, plant life"
 
     There are actually 1008 output classes of the Inception model
@@ -173,7 +173,8 @@ class NameLookup:
                     # Remove the enclosing "" from the string.
                     uid = uid[1:-2]
 
-                    # Insert into the lookup-dicts for both ways between uid and cls.
+                    # Insert into the lookup-dicts for both ways between uid and
+                    # cls.
                     self._uid_to_cls[uid] = cls
                     self._cls_to_uid[cls] = uid
 
@@ -247,7 +248,8 @@ class Inception:
     # This is used for classifying images with the Inception model.
     tensor_name_softmax = "softmax:0"
 
-    # Name of the tensor for the unscaled outputs of the softmax-classifier (aka. logits).
+    # Name of the tensor for the unscaled outputs of the softmax-classifier
+    # (aka. logits).
     tensor_name_softmax_logits = "softmax/logits:0"
 
     # Name of the tensor for the output of the Inception model.
@@ -282,23 +284,34 @@ class Inception:
                 # Then we load the proto-buf file into the graph-def.
                 graph_def.ParseFromString(file.read())
 
-                # Finally we import the graph-def to the default TensorFlow graph.
+                # Finally we import the graph-def to the
+                # default TensorFlow graph.
                 tf.import_graph_def(graph_def, name='')
 
-                # Now self.graph holds the Inception model from the proto-buf file.
+                # Now self.graph holds the Inception model from
+                # the proto-buf file.
 
         # Get the output of the Inception model by looking up the tensor
         # with the appropriate name for the output of the softmax-classifier.
         self.y_pred = self.graph.get_tensor_by_name(self.tensor_name_softmax)
 
-        # Get the unscaled outputs for the Inception model (aka. softmax-logits).
-        self.y_logits = self.graph.get_tensor_by_name(self.tensor_name_softmax_logits)
+        # Get the unscaled outputs for the Inception model
+        # (aka. softmax-logits).
+        self.y_logits = self.graph.get_tensor_by_name(
+            self.tensor_name_softmax_logits
+        )
 
-        # Get the tensor for the resized image that is input to the neural network.
-        self.resized_image = self.graph.get_tensor_by_name(self.tensor_name_resized_image)
+        # Get the tensor for the resized image that is input to
+        # the neural network.
+        self.resized_image = self.graph.get_tensor_by_name(
+            self.tensor_name_resized_image
+        )
 
-        # Get the tensor for the last layer of the graph, aka. the transfer-layer.
-        self.transfer_layer = self.graph.get_tensor_by_name(self.tensor_name_transfer_layer)
+        # Get the tensor for the last layer of the graph, aka.
+        # the transfer-layer.
+        self.transfer_layer = self.graph.get_tensor_by_name(
+            self.tensor_name_transfer_layer
+        )
 
         # Get the number of elements in the transfer-layer.
         self.transfer_len = self.transfer_layer.get_shape()[3]
@@ -318,7 +331,8 @@ class Inception:
         """
         Write graph to summary-file so it can be shown in TensorBoard.
 
-        This function is used for debugging and may be changed or removed in the future.
+        This function is used for debugging and may be changed or
+        removed in the future.
 
         :param logdir:
             Directory for writing the summary-files.
@@ -412,7 +426,10 @@ class Inception:
         feed_dict = self._create_feed_dict(image_path=image_path, image=image)
 
         # Execute the TensorFlow session to get the predicted labels.
-        resized_image = self.session.run(self.resized_image, feed_dict=feed_dict)
+        resized_image = self.session.run(
+            self.resized_image,
+            feed_dict=feed_dict
+        )
 
         # Remove the 1st dimension of the 4-dim tensor.
         resized_image = resized_image.squeeze(axis=0)
@@ -421,7 +438,6 @@ class Inception:
         resized_image = resized_image.astype(float) / 255.0
 
         return resized_image
-
 
     def print_scores(self, pred, k=10, only_first_name=True):
         """
@@ -434,8 +450,8 @@ class Inception:
             How many classes to print.
 
         :param only_first_name:
-            Some class-names are lists of names, if you only want the first name,
-            then set only_first_name=True.
+            Some class-names are lists of names, if you only want the
+            first name, then set only_first_name=True.
 
         :return:
             Nothing.
@@ -451,18 +467,18 @@ class Inception:
         List = []
         for cls in reversed(top_k):
             # Lookup the class-name.
-            name = self.name_lookup.cls_to_name(cls=cls, only_first_name=only_first_name)
+            name = self.name_lookup.cls_to_name(
+                cls=cls,
+                only_first_name=only_first_name
+            )
 
             # Predicted score (or probability) for this class.
             score = pred[cls]
 
             # Print the score and class-name.
             print("{0:>6.2%} : {1}".format(score, name))
-            x = "{0:>6.2%}".format(score)
-            print(x)
-            # score = "{0:>6.2%}".format(score)
-            # print("{0:>6.2%}".format(score))
-            List.append([x,name])
+            scorePercentage = "{0:>6.2%}".format(score)
+            List.append([scorePercentage, name])
         return List
 
     def transfer_values(self, image_path=None, image=None):
@@ -495,7 +511,10 @@ class Inception:
         # Use TensorFlow to run the graph for the Inception model.
         # This calculates the values for the last layer of the Inception model
         # prior to the softmax-classification, which we call transfer-values.
-        transfer_values = self.session.run(self.transfer_layer, feed_dict=feed_dict)
+        transfer_values = self.session.run(
+            self.transfer_layer,
+            feed_dict=feed_dict
+        )
 
         # Reduce to a 1-dim array.
         transfer_values = np.squeeze(transfer_values)
@@ -540,7 +559,8 @@ def process_images(fn, images=None, image_paths=None):
 
     # For each input image.
     for i in range(num_images):
-        # Status-message. Note the \r which means the line should overwrite itself.
+        # Status-message. Note the \r which means the
+        # line should overwrite itself.
         msg = "\r- Processing image: {0:>6} / {1}".format(i+1, num_images)
 
         # Print the status message.
@@ -597,9 +617,14 @@ def transfer_values_cache(cache_path, model, images=None, image_paths=None):
     # This is needed because we cannot supply both fn=process_images
     # and fn=model.transfer_values to the cache()-function.
     def fn():
-        return process_images(fn=model.transfer_values, images=images, image_paths=image_paths)
+        return process_images(
+            fn=model.transfer_values,
+            images=images,
+            image_paths=image_paths
+        )
 
-    # Read the transfer-values from a cache-file, or calculate them if the file does not exist.
+    # Read the transfer-values from a cache-file, or calculate them if the file
+    # does not exist.
     transfer_values = cache(cache_path=cache_path, fn=fn)
 
     return transfer_values
