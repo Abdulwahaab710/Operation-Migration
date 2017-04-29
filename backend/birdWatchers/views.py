@@ -11,16 +11,17 @@ def main():
     return '<h1>hello world!</h1>'
 
 
-@app.route('/search')
+@app.route('/search', methods=['POST'])
 def search():
     print(tf.__version__)
 
     # Download Inception model if not already done.
     # maybe_download()
 
-    data_dir = "birdWatchers/inception"
-    imagePath = 'cropped_panda.jpg'
-    image_path = os.path.join(data_dir, imagePath)
+    # data_dir = "birdWatchers/inception"
+    # imagePath = 'cropped_panda.jpg'
+    # image_path = os.path.join(data_dir, imagePath)
+    image_path = os.path.join('temp.jpg')
     # Load the Inception model so it is ready for classifying images.
     model = Inception()
     pred = model.classify(image_path=image_path)
@@ -37,3 +38,9 @@ def search():
         response += '</li>'
     response += '</ul>'
     return response
+
+
+def base64ToImg(img_data):
+    img = open('temp.jpg', 'wb')
+    img.write(img_data.decode('base64'))
+    img.close()
