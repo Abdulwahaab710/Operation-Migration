@@ -26,8 +26,14 @@ def search():
     pred = model.classify(image_path=image_path)
 
     # Print the scores and names for the top-10 predictions.
-    model.print_scores(pred=pred, k=10)
+    l = model.print_scores(pred=pred, k=10)
 
     # Close the TensorFlow session.
     model.close()
-    return '<h1> it works </h1>'
+    response = '<ul>'
+    for i in l:
+        response += '<li>'
+        response += str(i[1])
+        response += '</li>'
+    response += '</ul>'
+    return response
