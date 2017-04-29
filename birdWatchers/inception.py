@@ -57,8 +57,8 @@
 import numpy as np
 import tensorflow as tf
 # from birdWatchers import download
-import download
-from cache import cache
+# import download
+# from cache import cache
 import os
 import sys
 
