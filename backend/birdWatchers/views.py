@@ -60,24 +60,26 @@ def search():
 def fetchGPSbird():
     if request.args.get('bird-name'):
         birdName = request.args.get('bird-name')
+        birdname = '%' + birdName + '%'
         query = db.session.query(Bird).filter(
-            Bird.bird_name == birdName
+            Bird.bird_name.like(birdname)
         )
         responseList = []
-        for spottedBird in query.one().spotted_bird.all():
-            url = str('http://mz7xlyzuh2ua67.speedy.cloud/static/'
-                      +spottedBird.image
-                      )
-            responseList.append(
-                {
-                    "lat": spottedBird.gps_lat,
-                    "long": spottedBird.gps_long,
-                    "timestamp": spottedBird.timestamp,
-                    "image": url
-                }
-            )
-        response = {"data": responseList}
-        return jsonify(response)
+        if query.first() is not None:
+            for spottedbird in query.one().spotted_bird.all():
+                url = str('http://mz7xlyzuh2ua67.speedy.cloud/static/'
+                        + spottedbird.image
+                        )
+                responseList.append(
+                    {
+                        "lat": spottedbird.gps_lat,
+                        "long": spottedbird.gps_long,
+                        "timestamp": spottedbird.timestamp,
+                        "image": url
+                    }
+                )
+            response = {"data": responseList}
+            return jsonify(response)
     return abort(404)
 
 
