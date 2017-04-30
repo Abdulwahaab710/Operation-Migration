@@ -27,7 +27,7 @@ def search():
         l = model.print_scores(pred=pred, k=10)
         # Close the TensorFlow session.
         model.close()
-        bird = db.session.query(Bird).filter(Bird.bird_name == l[0][1]).one()
+        bird = db.session.query(Bird).filter(Bird.bird_name == l[0][1]).first()
         print(l[0][1])
         print(bird)
         if bird is None:
