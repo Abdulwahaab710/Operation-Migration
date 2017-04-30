@@ -26,7 +26,7 @@ def search():
         # Load the Inception model so it is ready for classifying images.
         print(img)
         mainFolderPath = dirname(os.path.realpath(__file__))
-        image_path = os.path.join(mainFolderPath, 'static/img', img)
+        image_path = os.path.join(mainFolderPath, 'static', img)
         print(image_path)
         model = Inception()
         pred = model.classify(image_path=image_path)
@@ -65,7 +65,9 @@ def fetchGPSbird():
         )
         responseList = []
         for spottedBird in query.one().spotted_bird.all():
-            url = 'http://mz7xlyzuh2ua67.speedy.cloud/' + spottedBird.image
+            url = str('http://mz7xlyzuh2ua67.speedy.cloud/static/'
+                      +spottedBird.image
+                      )
             responseList.append(
                 {
                     "lat": spottedBird.gps_lat,
@@ -87,7 +89,7 @@ def base64ToImg(img_data):
     fileName += '.jpg'
     img_data = str.encode(img_data)
     mainFolderPath = dirname(os.path.realpath(__file__))
-    p = os.path.join(mainFolderPath, 'static/img', fileName)
+    p = os.path.join(mainFolderPath, 'static', fileName)
     # print(p)
     with open(p, 'wb') as img:
         img.write(base64.decodestring(img_data))
