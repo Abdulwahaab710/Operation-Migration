@@ -6,6 +6,7 @@ birds = [name for name in os.listdir(".") if os.path.isdir(name)]
 for birdType in birds:
     birdFolder = "./"+birdType+"/"  
     images = [name for name in os.listdir(birdFolder) if os.path.isfile(birdFolder+name)]
+    print('testing: %s' % birdType)
 
     for image_path in images:
         image_path = birdFolder+image_path
@@ -35,4 +36,6 @@ for birdType in birds:
                 human_string = label_lines[node_id]
                 if human_string != birdType:
                     score = predictions[0][node_id]
-                    print("expected: "+birdType+" calculated: "+human_string+" score:"+score)
+                    print("expected: %s \ncalculated: %.5f \nscore:", (birdType, human_string, score))
+                else:
+                    print("pass")
