@@ -66,20 +66,21 @@ def fetchGPSbird():
         )
         responseList = []
         if query.first() is not None:
-            for spottedbird in query.one().spotted_bird.all():
-                url = str('http://mz7xlyzuh2ua67.speedy.cloud/static/'
-                        + spottedbird.image
-                        )
-                responseList.append(
-                    {
-                        "lat": spottedbird.gps_lat,
-                        "long": spottedbird.gps_long,
-                        "timestamp": spottedbird.timestamp,
-                        "image": url
-                    }
-                )
-            response = {"data": responseList}
-            return jsonify(response)
+            for bird in query.all():
+                for spottedbird in bird.spotted_bird.all():
+                    url = str('http://mz7xlyzuh2ua67.speedy.cloud/static/'
+                            + spottedbird.image
+                            )
+                    responseList.append(
+                        {
+                            "lat": spottedbird.gps_lat,
+                            "long": spottedbird.gps_long,
+                            "timestamp": spottedbird.timestamp,
+                            "image": url
+                        }
+                    )
+                response = {"data": responseList}
+                return jsonify(response)
     return abort(404)
 
 
