@@ -36,6 +36,6 @@ for birdType in birds:
                 human_string = label_lines[node_id]
                 if human_string != birdType:
                     score = predictions[0][node_id]
-                    print("expected: %s \ncalculated: %s \nscore: %.5f", % (birdType, human_string, score))
+                    print("expected: %s \ncalculated: %s \nscore: %.5f" % (birdType, human_string, score))
                 else:
                     print("pass")
