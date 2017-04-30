@@ -3,7 +3,6 @@ import tensorflow as tf
 import os
 from flask import request, jsonify, abort
 import base64
-# from birdWatchers.Inception.inception import download
 from birdWatchers.inception import Inception
 
 
