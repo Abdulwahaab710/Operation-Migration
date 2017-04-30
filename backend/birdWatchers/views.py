@@ -32,6 +32,14 @@ def search():
     return abort(404)
 
 
+@app.route('/getbird', methods=['GET'])
+def fetchGPSbird():
+    if request.args.get('bird-name'):
+        birdName = request.args.get('bird-name')
+        response = {"data": [{"lat": "1234", "long": "4321", "timestamp": "hello"}]}
+        return jsonify( response )
+    return abort(404)
+
 def base64ToImg(img_data):
     img_data = str.encode(img_data)
     with open('temp.jpg', 'wb') as img:
