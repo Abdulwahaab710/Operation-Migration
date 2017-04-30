@@ -1,6 +1,10 @@
 from birdWatchers import app, db
 import tensorflow as tf
 import os
+from os.path import join, dirname
+import time
+import hashlib
+import datetime
 from flask import request, jsonify, abort
 import base64
 from birdWatchers.inception import Inception
@@ -18,9 +22,12 @@ def search():
     print(tf.__version__)
     if request.method == 'POST':
         jsonRequest = request.json
-        base64ToImg(jsonRequest['image'])
-        image_path = os.path.join('temp.jpg')
+        img = base64ToImg(jsonRequest['image'])
         # Load the Inception model so it is ready for classifying images.
+        print(img)
+        mainFolderPath = dirname(os.path.realpath(__file__))
+        image_path = os.path.join(mainFolderPath, 'static/img', img)
+        print(image_path)
         model = Inception()
         pred = model.classify(image_path=image_path)
         # Print the scores and names for the top-10 predictions.
@@ -39,7 +46,8 @@ def search():
             jsonRequest['gps']['lat'],
             jsonRequest['gps']['long'],
             jsonRequest['timestamp'],
-            bird.id
+            bird.id,
+            img
         )
         db.session.add(spotted)
         db.session.commit()
@@ -57,11 +65,13 @@ def fetchGPSbird():
         )
         responseList = []
         for spottedBird in query.one().spotted_bird.all():
+            url = 'http://mz7xlyzuh2ua67.speedy.cloud/' + spottedBird.image
             responseList.append(
                 {
                     "lat": spottedBird.gps_lat,
                     "long": spottedBird.gps_long,
-                    "timestamp": spottedBird.timestamp
+                    "timestamp": spottedBird.timestamp,
+                    "image": url
                 }
             )
         response = {"data": responseList}
@@ -70,6 +80,15 @@ def fetchGPSbird():
 
 
 def base64ToImg(img_data):
+    ts = time.time()
+    dateTime = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    hash_object = hashlib.sha256(str.encode(dateTime))
+    fileName = hash_object.hexdigest()
+    fileName += '.jpg'
     img_data = str.encode(img_data)
-    with open('temp.jpg', 'wb') as img:
+    mainFolderPath = dirname(os.path.realpath(__file__))
+    p = os.path.join(mainFolderPath, 'static/img', fileName)
+    # print(p)
+    with open(p, 'wb') as img:
         img.write(base64.decodestring(img_data))
+    return fileName
