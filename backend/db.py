@@ -1,7 +1,7 @@
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import SQLALCHEMY_DATABASE_URI
-from app import app, db
+from birdWatchers import app, db
 
 migrate = Migrate(app, db)
 
