@@ -1,10 +1,10 @@
-from birdWatchers import app
+from birdWatchers import app, db
 import tensorflow as tf
 import os
 from flask import request, jsonify, abort
 import base64
 from birdWatchers.inception import Inception
-
+from birdWatchers.models import Bird, SpottedBird
 
 @app.route('/')
 def main():
@@ -26,6 +26,16 @@ def search():
         l = model.print_scores(pred=pred, k=10)
         # Close the TensorFlow session.
         model.close()
+        bird = Bird.quert.get(bird_name=l[0][0])
+        spotted = SpottedBird(
+            # gps_lat, gps_long, timestamp, bird_id
+            jsonRequest['lat'],
+            jsonRequest['long'],
+            jsonRequest['timestamp'],
+            bird.id
+        )
+        db.session.add(spotted)
+        db.session.commit()
         response = {"top3": l[0:3], "top1": l[0]}
         return jsonify(response)
     return abort(404)
