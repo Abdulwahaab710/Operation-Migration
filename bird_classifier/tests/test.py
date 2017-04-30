@@ -8,8 +8,8 @@ for birdType in birds:
     images = [name for name in os.listdir(birdFolder) if os.path.isfile(birdFolder+name)]
     print('testing: %s' % birdType)
 
-    for image_path in images:
-        image_path = birdFolder+image_path
+    for image_name in images:
+        image_path = birdFolder+image_name
 
         # Read in the image_data
         image_data = tf.gfile.FastGFile(image_path, 'rb').read()
@@ -36,6 +36,7 @@ for birdType in birds:
                 human_string = label_lines[node_id]
                 if human_string != birdType:
                     score = predictions[0][node_id]
-                    print("expected: %s \ncalculated: %s \nscore: %.5f" % (birdType, human_string, score))
+                    print("expected: %s calculated: %s score: %.5f" % (birdType, human_string, score))
+                    print("failed file: %s" % image_name)
                 else:
                     print("pass")
