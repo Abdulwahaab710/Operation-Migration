@@ -16,7 +16,7 @@ class Bird(db.Model):
 
 class SpottedBird(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    gps_lat = db.Column(db.String(db.Float))
+    gps_lat = db.Column(db.Float)
     gps_long = db.Column(db.Float)
     timestamp = db.Column(db.DateTime)
     bird_id = db.Column(
