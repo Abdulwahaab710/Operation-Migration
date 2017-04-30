@@ -52,9 +52,23 @@ def search():
 def fetchGPSbird():
     if request.args.get('bird-name'):
         birdName = request.args.get('bird-name')
-        response = Bird.query.get(bird_name=birdName)
-        response = {"data": [{"lat": "1234", "long": "4321", "timestamp": "hello"}]}
+        query = db.session.query(Bird).filter(
+            Bird.bird_name == birdName
+        )
+        responseList = []
+        for spottedBird in query.one().spotted_bird.all():
+            # spottedBird = r.spotted_bird.all()
+            responseList.append(
+                {
+                    "lat": spottedBird.gps_long,
+                    "long": spottedBird.gps_lat,
+                    "timestamp": spottedBird.timestamp
+                }
+            )
+        response = {"data": responseList}
+        # response = {"data": [{"lat": "1234", "long": "4321", "timestamp": "hello"}]}
         return jsonify(response)
+        # return 'hello'
     return abort(404)
 
 
