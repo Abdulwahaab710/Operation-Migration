@@ -57,7 +57,6 @@ def fetchGPSbird():
         )
         responseList = []
         for spottedBird in query.one().spotted_bird.all():
-            # spottedBird = r.spotted_bird.all()
             responseList.append(
                 {
                     "lat": spottedBird.gps_long,
@@ -66,9 +65,7 @@ def fetchGPSbird():
                 }
             )
         response = {"data": responseList}
-        # response = {"data": [{"lat": "1234", "long": "4321", "timestamp": "hello"}]}
         return jsonify(response)
-        # return 'hello'
     return abort(404)
 
 
