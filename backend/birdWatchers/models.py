@@ -1,8 +1,13 @@
 from birdWatchers import db
-class Post(db.Model):
+class Bird(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(128))
-    body = db.Column(db.Text)
-    def __init__(self, title, body):
-        self.title = title
-        self.body = body
+    bird_name = db.Column(db.String(255))
+    spotted_bird = db.db.relationship(
+        'Bird',
+        backref='spotted_bird',
+        lazy='dynamic'
+    )
+    def __init__(self, bird_name):
+        self.bird_name = bird_name
+
+
