@@ -5,8 +5,8 @@ class Bird(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     bird_name = db.Column(db.String(255))
     spotted_bird = db.relationship(
-        'Bird',
-        backref='spotted_bird',
+        'SpottedBird',
+        backref='bird',
         lazy='dynamic'
     )
 
