@@ -59,8 +59,8 @@ def fetchGPSbird():
         for spottedBird in query.one().spotted_bird.all():
             responseList.append(
                 {
-                    "lat": spottedBird.gps_long,
-                    "long": spottedBird.gps_lat,
+                    "lat": spottedBird.gps_lat,
+                    "long": spottedBird.gps_long,
                     "timestamp": spottedBird.timestamp
                 }
             )
