@@ -8,7 +8,7 @@ USERNAME = dotenv.get('USERNAME')
 PASSWORD = dotenv.get('PASSWORD')
 DATABASE = 'birdWatchers'
 
-SQLALCHEMY_DATABASE_URI = 'mysql://{}:{}@localhost/{}'.formt(
+SQLALCHEMY_DATABASE_URI = 'mysql://{}:{}@localhost/{}'.format(
     USERNAME,
     PASSWORD,
     DATABASE
