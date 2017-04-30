@@ -27,11 +27,17 @@ def search():
         l = model.print_scores(pred=pred, k=10)
         # Close the TensorFlow session.
         model.close()
-        bird = Bird.query.get(bird_name=l[0][0])
+        bird = db.session.query(Bird).filter(Bird.bird_name == l[0][1]).one()
+        print(l[0][1])
+        print(bird)
+        if bird is None:
+            bird = Bird(bird_name=l[0][1])
+            db.session.add(bird)
+            db.session.commit()
         spotted = SpottedBird(
             # gps_lat, gps_long, timestamp, bird_id
-            jsonRequest['lat'],
-            jsonRequest['long'],
+            jsonRequest['gps']['lat'],
+            jsonRequest['gps']['long'],
             jsonRequest['timestamp'],
             bird.id
         )
