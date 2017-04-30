@@ -6,6 +6,7 @@ import base64
 from birdWatchers.inception import Inception
 from birdWatchers.models import Bird, SpottedBird
 
+
 @app.route('/')
 def main():
     return '<h1>hello world!</h1>'
@@ -26,7 +27,7 @@ def search():
         l = model.print_scores(pred=pred, k=10)
         # Close the TensorFlow session.
         model.close()
-        bird = Bird.quert.get(bird_name=l[0][0])
+        bird = Bird.query.get(bird_name=l[0][0])
         spotted = SpottedBird(
             # gps_lat, gps_long, timestamp, bird_id
             jsonRequest['lat'],
@@ -45,9 +46,11 @@ def search():
 def fetchGPSbird():
     if request.args.get('bird-name'):
         birdName = request.args.get('bird-name')
+        response = Bird.query.get(bird_name=birdName)
         response = {"data": [{"lat": "1234", "long": "4321", "timestamp": "hello"}]}
-        return jsonify( response )
+        return jsonify(response)
     return abort(404)
+
 
 def base64ToImg(img_data):
     img_data = str.encode(img_data)
